@@ -122,9 +122,7 @@ app.get('/', (req, res) => {
         console.log(QRSVG);
 
         const img = new Image;
-        // const canvas = document.getElementById('myCanvas');
-        // const ctx = canvas.getContext('2d');
-
+       
         // Convert the SVG data to a data URL
         const svgBlob = new Blob([QRSVG], {
             type: 'image/svg+xml;charset=utf-8',
@@ -137,10 +135,18 @@ app.get('/', (req, res) => {
 
             // Clean up the blob URL
             URL.revokeObjectURL(url);
+
+            //resolve
         };
 
         img.src = url;
 
+
+
+        // setTimeout(() => {
+
+
+        // }, 1000);
         return canvas;
     };
 
