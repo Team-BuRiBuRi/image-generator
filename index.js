@@ -4,7 +4,6 @@ const port = 3000;
 
 const { createCanvas, loadImage } = require('canvas');
 
-
 const { qrcanvas, setCanvasModule } = require('qrcanvas');
 
 // Enable node-canvas
@@ -28,110 +27,109 @@ app.get('/', async (req, res) => {
     productPriceUSD,
     productPriceBTC,
     id
-  ) => new Promise((resolve, reject) => {
-    const canvas = createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
-    const data = new Date();
-    // hh:mm:ss 02:30:15
-    const timeStamp = data.toLocaleTimeString('en-US', {
-      hour12: false,
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
+  ) =>
+    new Promise((resolve, reject) => {
+      const canvas = createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
+      const data = new Date();
+      // hh:mm:ss 02:30:15
+      const timeStamp = data.toLocaleTimeString('en-US', {
+        hour12: false,
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+      });
+
+      const ctx = canvas.getContext('2d');
+
+      ctx.fillStyle = 'white';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Title
+      ctx.fillStyle = 'black';
+      ctx.font = `bold ${FONT_SIZE_TITLE}px Impact`;
+      ctx.fillText(
+        productName,
+        FONT_SIZE_TITLE / 2 + PADDING,
+        FONT_SIZE_TITLE + PADDING / 2
+      );
+
+      // Line
+      // draw a line under the title
+      ctx.beginPath();
+      ctx.moveTo(10, FONT_SIZE_TITLE + PADDING);
+      ctx.lineTo(CANVAS_WIDTH - 10, FONT_SIZE_TITLE + PADDING);
+      ctx.stroke();
+
+      ctx.font = `${FONT_SIZE_TIMESTAMP}px Impact`;
+
+      // ctx.fillText(
+      //   `Last update ${productPriceARS}`,
+      //   CANVAS_WIDTH - productPriceText.width - PADDING,
+      //   80
+      // );
+
+      const timeStampText = ctx.measureText(`Last update ${timeStamp}`);
+
+      ctx.fillText(
+        `Last update ${timeStamp}`,
+        CANVAS_WIDTH - timeStampText.width - PADDING,
+        55
+      );
+
+      ctx.fillStyle = RED;
+      ctx.font = `bold ${FONT_SIZE_ARS}px Impact`;
+
+      const productPriceText = ctx.measureText(`${productPriceARS} ARS`);
+      // ctx.fillText(
+      //   `${productPriceARS} ARS`,
+      //   CANVAS_WIDTH - productPriceText.width - PADDING,
+      //   CANVAS_HEIGHT - FONT_SIZE_TITLE
+      // );
+
+      ctx.fillText(
+        `${productPriceARS} ARS`,
+        CANVAS_WIDTH - productPriceText.width - PADDING,
+        80
+      );
+
+      ctx.font = ` ${FONT_SIZE_USD}px Impact`;
+
+      ctx.fillText(
+        `${productPriceUSD} USD`,
+        CANVAS_WIDTH - productPriceText.width - PADDING,
+        100
+      );
+
+      ctx.fillText(
+        `${productPriceBTC} BTC`,
+        CANVAS_WIDTH - productPriceText.width - PADDING,
+        120
+      );
+
+      // Solum Logo
+      // ctx.fillRect(CANVAS_WIDTH - 52, 0, 52, 17);
+
+      // ctx.fillStyle = 'white';
+
+      // ctx.fillText(`SOLUM`, CANVAS_WIDTH - 45, 14);
+
+      const canvas2 = qrcanvas({
+        data: 'https://junction2023.vercel.app/qr/' + id,
+      });
+
+      ctx.drawImage(canvas2, 10, 53, 60, 60);
+
+      // return canvas;
+
+      const logo_image = loadImage('./blink_red.png');
+
+      logo_image.then((image) => {
+        // console.log(image);
+        ctx.drawImage(image, CANVAS_WIDTH - 88, 0, 88, 35);
+
+        resolve(canvas);
+      });
     });
-
-    const ctx = canvas.getContext('2d');
-
-    ctx.fillStyle = 'white';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    // Title
-    ctx.fillStyle = 'black';
-    ctx.font = `bold ${FONT_SIZE_TITLE}px Impact`;
-    ctx.fillText(
-      productName,
-      FONT_SIZE_TITLE / 2 + PADDING,
-      FONT_SIZE_TITLE + PADDING / 2
-    );
-
-    // Line
-    // draw a line under the title
-    ctx.beginPath();
-    ctx.moveTo(10, FONT_SIZE_TITLE + PADDING);
-    ctx.lineTo(CANVAS_WIDTH - 10, FONT_SIZE_TITLE + PADDING);
-    ctx.stroke();
-
-    ctx.font = `${FONT_SIZE_TIMESTAMP}px Impact`;
-
-    // ctx.fillText(
-    //   `Last update ${productPriceARS}`,
-    //   CANVAS_WIDTH - productPriceText.width - PADDING,
-    //   80
-    // );
-
-    const timeStampText = ctx.measureText(`Last update ${timeStamp}`);
-
-    ctx.fillText(
-      `Last update ${timeStamp}`,
-      CANVAS_WIDTH - timeStampText.width - PADDING,
-      55
-    );
-
-    ctx.fillStyle = RED;
-    ctx.font = `bold ${FONT_SIZE_ARS}px Impact`;
-
-    const productPriceText = ctx.measureText(`${productPriceARS} ARS`);
-    // ctx.fillText(
-    //   `${productPriceARS} ARS`,
-    //   CANVAS_WIDTH - productPriceText.width - PADDING,
-    //   CANVAS_HEIGHT - FONT_SIZE_TITLE
-    // );
-
-    ctx.fillText(
-      `${productPriceARS} ARS`,
-      CANVAS_WIDTH - productPriceText.width - PADDING,
-      80
-    );
-
-    ctx.font = ` ${FONT_SIZE_USD}px Impact`;
-
-    ctx.fillText(
-      `${productPriceUSD} USD`,
-      CANVAS_WIDTH - productPriceText.width - PADDING,
-      100
-    );
-
-    ctx.fillText(
-      `${productPriceBTC} BTC`,
-      CANVAS_WIDTH - productPriceText.width - PADDING,
-      120
-    );
-
-    // Solum Logo
-    // ctx.fillRect(CANVAS_WIDTH - 52, 0, 52, 17);
-
-    // ctx.fillStyle = 'white';
-
-    // ctx.fillText(`SOLUM`, CANVAS_WIDTH - 45, 14);
-
-
-    const canvas2 = qrcanvas({
-      data: 'junction2023.vercel.app/qr/' + id,
-    });
-
-    ctx.drawImage(canvas2, 10, 53, 60, 60);
-
-    // return canvas;
-
-
-    const logo_image = loadImage('./blink_red.png');
-
-    logo_image.then((image) => {
-      // console.log(image);
-      ctx.drawImage(image, CANVAS_WIDTH - 88, 0, 88, 35);
-
-      resolve(canvas);
-    });
-  });
 
   const ToBase64 = (canvas) => {
     const base64 = canvas.toDataURL();
@@ -147,7 +145,6 @@ app.get('/', async (req, res) => {
   // const result = ToBase64(drawCanvas(name, ars, usd, btc, id));
 
   drawCanvas(name, ars, usd, btc, id).then((canvas) => {
-
     const result = ToBase64(canvas);
     const elsMap = {
       1: '085C1B03E1DA',
@@ -163,8 +160,7 @@ app.get('/', async (req, res) => {
       frontPage: 1,
       image: result,
     });
-
-  })
+  });
 
   // const elsMap = {
   //   1: '085C1B03E1DA',
