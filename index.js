@@ -15,20 +15,15 @@ setCanvasModule(require('canvas'));
 
 
 app.get('/', (req, res) => {
-
-
-
+    const {name, id, usd, ars, btc} = req.query;
 
     const FONT_SIZE_TITLE = 30;
     const FONT_SIZE_TIMESTAMP = 12;
     const FONT_SIZE_ARS = 24;
     const FONT_SIZE_USD = 14;
-
     const CANVAS_WIDTH = 250;
     const CANVAS_HEIGHT = 122;
-
     const PADDING = 10;
-
     const RED = '#bd2217';
 
     const drawCanvas = (
@@ -36,11 +31,17 @@ app.get('/', (req, res) => {
         productPriceARS,
         productPriceUSD,
         productPriceBTC,
-        timeStamp,
-        qrCode
+        id
     ) => {
         const canvas = createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
-        // const canvas = canvasRef.current;
+        const data = new Date();
+        // hh:mm:ss 02:30:15
+        const timeStamp = data.toLocaleTimeString('en-US', {
+            hour12: false,
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+        });
 
         const ctx = canvas.getContext('2d');
 
@@ -123,7 +124,7 @@ app.get('/', (req, res) => {
 
 
         const canvas2 = qrcanvas({
-            data: 'hello, world'
+            data: 'junction2023.vercel.app/qr/'+id,
         });
 
         ctx.drawImage(canvas2, 10, 40, 60, 60)
@@ -131,23 +132,21 @@ app.get('/', (req, res) => {
         return canvas;
     };
 
-
     const ToBase64 = (canvas) => {
         const base64 = canvas.toDataURL();
 
         const base64Data = base64.replace(/^data:image\/png;base64,/, "");
-        console.log(base64Data);
+        // console.log(base64Data);
 
         return base64Data;
     };
 
     const result = ToBase64(drawCanvas(
-        'Tomato',
-        261,
-        0.75,
-        0.000029,
-        '00:00:00',
-        'qrcode'
+        name,
+        ars,
+        usd,
+        btc,
+        id
     ));
 
     res.status(200).json({
