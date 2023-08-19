@@ -2,7 +2,7 @@ const express = require('express');
 const app = express();
 const port = 3000;
 
-const { createCanvas } = require('canvas');
+const { createCanvas, loadImage } = require('canvas');
 
 
 const { qrcanvas, setCanvasModule } = require('qrcanvas');
@@ -10,7 +10,7 @@ const { qrcanvas, setCanvasModule } = require('qrcanvas');
 // Enable node-canvas
 setCanvasModule(require('canvas'));
 
-app.get('/', (req, res) => {
+app.get('/', async (req, res) => {
   const { name, id, usd, ars, btc } = req.query;
 
   const FONT_SIZE_TITLE = 30;
@@ -28,7 +28,7 @@ app.get('/', (req, res) => {
     productPriceUSD,
     productPriceBTC,
     id
-  ) => {
+  ) => new Promise((resolve, reject) => {
     const canvas = createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
     const data = new Date();
     // hh:mm:ss 02:30:15
@@ -106,11 +106,12 @@ app.get('/', (req, res) => {
       120
     );
 
-    ctx.fillRect(CANVAS_WIDTH - 52, 0, 52, 17);
+    // Solum Logo
+    // ctx.fillRect(CANVAS_WIDTH - 52, 0, 52, 17);
 
-    ctx.fillStyle = 'white';
+    // ctx.fillStyle = 'white';
 
-    ctx.fillText(`SOLUM`, CANVAS_WIDTH - 45, 14);
+    // ctx.fillText(`SOLUM`, CANVAS_WIDTH - 45, 14);
 
 
     const canvas2 = qrcanvas({
@@ -119,8 +120,18 @@ app.get('/', (req, res) => {
 
     ctx.drawImage(canvas2, 10, 40, 60, 60);
 
-    return canvas;
-  };
+    // return canvas;
+
+
+    const logo_image = loadImage('./blink_red.png');
+
+    logo_image.then((image) => {
+      // console.log(image);
+      ctx.drawImage(image, CANVAS_WIDTH - 88, 0, 88, 35);
+
+      resolve(canvas);
+    });
+  });
 
   const ToBase64 = (canvas) => {
     const base64 = canvas.toDataURL();
@@ -131,22 +142,44 @@ app.get('/', (req, res) => {
     return base64Data;
   };
 
-  const result = ToBase64(drawCanvas(name, ars, usd, btc, id));
+  // const result = ToBase64(drawCanvas(name, ars, usd, btc, id));
 
-  const elsMap = {
-    1: '085C1B03E1DA',
-    2: '085C1B0DE1D4',
-    3: '085C1B2FE1D4',
-    4: '085C1B3FE1D5',
-    5: '085C1B48E1D5',
-  };
+  // const result = ToBase64(drawCanvas(name, ars, usd, btc, id));
 
-  res.status(200).json({
-    labelCode: elsMap[id],
-    page: 1,
-    frontPage: 1,
-    image: result,
-  });
+  drawCanvas(name, ars, usd, btc, id).then((canvas) => {
+
+    const result = ToBase64(canvas);
+    const elsMap = {
+      1: '085C1B03E1DA',
+      2: '085C1B0DE1D4',
+      3: '085C1B2FE1D4',
+      4: '085C1B3FE1D5',
+      5: '085C1B48E1D5',
+    };
+
+    res.status(200).json({
+      labelCode: elsMap[id],
+      page: 1,
+      frontPage: 1,
+      image: result,
+    });
+
+  })
+
+  // const elsMap = {
+  //   1: '085C1B03E1DA',
+  //   2: '085C1B0DE1D4',
+  //   3: '085C1B2FE1D4',
+  //   4: '085C1B3FE1D5',
+  //   5: '085C1B48E1D5',
+  // };
+
+  // res.status(200).json({
+  //   labelCode: elsMap[id],
+  //   page: 1,
+  //   frontPage: 1,
+  //   image: result,
+  // });
 });
 
 app.listen(port, () => {
