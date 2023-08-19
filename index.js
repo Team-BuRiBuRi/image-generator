@@ -118,7 +118,7 @@ app.get('/', async (req, res) => {
       data: 'junction2023.vercel.app/qr/' + id,
     });
 
-    ctx.drawImage(canvas2, 10, 40, 60, 60);
+    ctx.drawImage(canvas2, 10, 53, 60, 60);
 
     // return canvas;
 
