@@ -7,6 +7,13 @@ const { createCanvas, Image } = require('canvas');
 const QRCode = require('./qr.js');
 const fs = require('fs');
 
+const { qrcanvas, setCanvasModule } = require('qrcanvas');
+
+// Enable node-canvas
+setCanvasModule(require('canvas'));
+
+
+
 app.get('/', (req, res) => {
 
 
@@ -108,45 +115,19 @@ app.get('/', (req, res) => {
 
         ctx.fillText(`SOLUM`, CANVAS_WIDTH - 45, 14);
 
-        const QRSVG = new QRCode({
-            content: `${qrCode}`,
-            padding: 4,
-            width: 86,
-            height: 86,
-            color: '#000000',
-            background: '#ffffff',
-            ecl: 'L',
-            join: true,
-        }).svg();
-
-        console.log(QRSVG);
-
-        const img = new Image;
-       
-        // Convert the SVG data to a data URL
-        const svgBlob = new Blob([QRSVG], {
-            type: 'image/svg+xml;charset=utf-8',
-        });
-        const url = URL.createObjectURL(svgBlob);
-
-        img.onload = function () {
-            // Draw the loaded image onto the canvas
-            ctx.drawImage(img, 14, 42, 86, 86);
-
-            // Clean up the blob URL
-            URL.revokeObjectURL(url);
-
-            //resolve
-        };
-
-        img.src = url;
-
-
 
         // setTimeout(() => {
 
 
         // }, 1000);
+
+
+        const canvas2 = qrcanvas({
+            data: 'hello, world'
+        });
+
+        ctx.drawImage(canvas2, 10, 40, 60, 60)
+
         return canvas;
     };
 
