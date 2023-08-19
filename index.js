@@ -2,9 +2,8 @@ const express = require('express');
 const app = express();
 const port = 3000;
 
-const { createCanvas, Image } = require('canvas');
-const QRCode = require('./qr.js');
-const fs = require('fs');
+const { createCanvas } = require('canvas');
+
 
 const { qrcanvas, setCanvasModule } = require('qrcanvas');
 
@@ -113,9 +112,6 @@ app.get('/', (req, res) => {
 
     ctx.fillText(`SOLUM`, CANVAS_WIDTH - 45, 14);
 
-    // setTimeout(() => {
-
-    // }, 1000);
 
     const canvas2 = qrcanvas({
       data: 'junction2023.vercel.app/qr/' + id,
